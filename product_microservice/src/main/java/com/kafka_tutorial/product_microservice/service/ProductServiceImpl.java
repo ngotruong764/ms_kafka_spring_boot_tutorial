@@ -24,24 +24,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public String createProduct(CreateProductModel product) {
+    public String createProduct(CreateProductModel product) throws Exception {
         String productId = UUID.randomUUID().toString();
         // TODO: Persist product detail into database table before publishing an Event
 
         ProductCreatedEvent productCreatedEvent = new ProductCreatedEvent(productId, product.getTitle(),
                 product.getPrice(), product.getQuantity());
-        // Send message async
-        CompletableFuture<SendResult<String, String>> future = kafkaTemplate
-                .send("product-created-event-topic", productId, objectMapper.writeValueAsString(productCreatedEvent));
+        // Send message sync
+        SendResult<String, String> result = kafkaTemplate
+                .send("product-created-event-topic", productId, objectMapper.writeValueAsString(productCreatedEvent))
+                .get();
 
-        // Handle when future complete
-        future.whenComplete((r, e) -> {
-            if (e != null) {
-                LOGGER.error("*****Error while sending create product event", e);
-            } else {
-                LOGGER.info("******Successfully send product event {}", r.getRecordMetadata());
-            }
-        });
+        LOGGER.info("Created product with id: {}", productId);
 
         return productId;
     }
