@@ -35,8 +35,10 @@ public class ProductServiceImpl implements ProductService {
                 .send("product-created-event-topic", productId, objectMapper.writeValueAsString(productCreatedEvent))
                 .get();
 
-        LOGGER.info("Created product with id: {}", productId);
+        throw new Exception();
 
-        return productId;
+//        LOGGER.info("Created product with id: {}", productId);
+
+//        return productId;
     }
 }
