@@ -30,15 +30,20 @@ public class ProductServiceImpl implements ProductService {
 
         ProductCreatedEvent productCreatedEvent = new ProductCreatedEvent(productId, product.getTitle(),
                 product.getPrice(), product.getQuantity());
+
+        LOGGER.info("Before publishing a ProductCreateEvent");
+
         // Send message sync
         SendResult<String, String> result = kafkaTemplate
                 .send("product-created-event-topic", productId, objectMapper.writeValueAsString(productCreatedEvent))
                 .get();
 
-        throw new Exception();
+        LOGGER.info("Partition: {}", result.getRecordMetadata().partition());
+        LOGGER.info("Topic: {}", result.getRecordMetadata().topic());
+        LOGGER.info("Partition offset: {}", result.getRecordMetadata().offset());
 
-//        LOGGER.info("Created product with id: {}", productId);
+        LOGGER.info("Created product with id: {}", productId);
 
-//        return productId;
+        return productId;
     }
 }
