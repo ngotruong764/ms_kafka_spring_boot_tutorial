@@ -25,6 +25,10 @@ public class KafkaConfig {
     private String valueSerializer;
     @Value("${spring.kafka.producer.acks}")
     private String acks;
+    @Value("${spring.kafka.producer.properties.enable.idempotent}")
+    private boolean idempotent;
+    @Value("${spring.kafka.producer.properties.max.in.flight.requests.per.connection}")
+    private Integer inflightRequests;
 
     private Map<String, Object> producerConfig() {
         Map<String, Object> config = new HashMap<>();
@@ -32,6 +36,8 @@ public class KafkaConfig {
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);
         config.put(ProducerConfig.ACKS_CONFIG, acks);
+        config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, idempotent);
+        config.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, inflightRequests);
         return config;
     }
 
