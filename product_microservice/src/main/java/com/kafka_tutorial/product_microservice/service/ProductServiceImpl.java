@@ -10,16 +10,15 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate;
 
-    public ProductServiceImpl(KafkaTemplate<String, String> kafkaTemplate) {
+    public ProductServiceImpl(KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -34,8 +33,8 @@ public class ProductServiceImpl implements ProductService {
         LOGGER.info("Before publishing a ProductCreateEvent");
 
         // Send message sync
-        SendResult<String, String> result = kafkaTemplate
-                .send("product-created-event-topic", productId, objectMapper.writeValueAsString(productCreatedEvent))
+        SendResult<String, ProductCreatedEvent> result = kafkaTemplate
+                .send("product-created-event-topic", productId, productCreatedEvent)
                 .get();
 
         LOGGER.info("Partition: {}", result.getRecordMetadata().partition());
