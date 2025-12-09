@@ -1,7 +1,7 @@
 package com.kafka_tutorial.product_microservice.service;
 
+import com.kafka_tutorial.core.ProductCreatedEvent;
 import com.kafka_tutorial.product_microservice.Models.CreateProductModel;
-import com.kafka_tutorial.product_microservice.ProductCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
