@@ -1,5 +1,6 @@
 package com.kafka_tutorial.email_notification_ms.config;
 
+import com.kafka_tutorial.email_notification_ms.error.NotRetryableException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -42,6 +43,8 @@ public class KafkaConsumerConfig {
                                                                                                  KafkaTemplate<String, Object> kafkaTemplate) {
         // Handle exception occur during message consumption by Kafka listener
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(new DeadLetterPublishingRecoverer(kafkaTemplate));
+        // When not retryable -> use this class -> send messages to Dead Letter Topic (DLT)
+        errorHandler.addNotRetryableExceptions(NotRetryableException.class);
 
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
