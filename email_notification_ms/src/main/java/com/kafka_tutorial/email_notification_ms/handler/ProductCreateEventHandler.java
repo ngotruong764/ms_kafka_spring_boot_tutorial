@@ -1,6 +1,7 @@
 package com.kafka_tutorial.email_notification_ms.handler;
 
 import com.kafka_tutorial.core.ProductCreatedEvent;
+import com.kafka_tutorial.email_notification_ms.error.NotRetryableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -15,6 +16,7 @@ public class ProductCreateEventHandler {
     // Handle event
     @KafkaHandler
     public void handle(ProductCreatedEvent productCreatedEvent) {
+        if (true) throw new NotRetryableException("An error occurred. No nee to consume this message again.");
         LOGGER.info("Received a new event: {}", productCreatedEvent.getTitle());
     }
 }
