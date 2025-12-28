@@ -2,6 +2,7 @@ package com.kafka_tutorial.product_microservice.service;
 
 import com.kafka_tutorial.core.ProductCreatedEvent;
 import com.kafka_tutorial.product_microservice.Models.CreateProductModel;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -9,6 +10,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
@@ -31,10 +33,14 @@ public class ProductServiceImpl implements ProductService {
                 product.getPrice(), product.getQuantity());
 
         LOGGER.info("Before publishing a ProductCreateEvent");
+        // Create ProducerRecord to send headers
+        ProducerRecord<String, ProductCreatedEvent> producerRecord = new ProducerRecord<>(
+                "product-created-event-topic", productId, productCreatedEvent);
+        producerRecord.headers().add("messageId", UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
 
         // Send message sync
         SendResult<String, ProductCreatedEvent> result = kafkaTemplate
-                .send("product-created-event-topic", productId, productCreatedEvent)
+                .send(producerRecord)
                 .get();
 
         LOGGER.info("Partition: {}", result.getRecordMetadata().partition());
